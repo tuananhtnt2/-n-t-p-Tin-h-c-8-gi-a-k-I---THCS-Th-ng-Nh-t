@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ôn tập Tin học 8</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;800&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout concept: một trang vở ô ly. Cột đọc hẹp, nền kẻ ô, mực xanh làm điểm nhấn, bút đỏ/xanh lá chỉ dùng để chấm đúng/sai. */
+:root{
+  --paper:#F3F6F4;
+  --grid:rgba(29,78,216,.08);
+  --ink:#12203A;
+  --ink-2:#4A5A75;
+  --card:#FFFFFF;
+  --line:#D3DCE8;
+  --blue:#1D4ED8;
+  --blue-soft:#E4EBFF;
+  --on-blue:#FFFFFF;
+  --ok:#11773F;
+  --ok-soft:#DCF3E5;
+  --bad:#BF2D26;
+  --bad-soft:#FBE2E0;
+  --note:#FFF5C7;
+  --hl:rgba(255,205,30,.6);
+  --body:"Be Vietnam Pro",system-ui,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1522;--grid:rgba(130,165,255,.07);--ink:#E7EDF8;--ink-2:#9DAAC4;--card:#162033;--line:#2B3A59;
+    --blue:#86A8FF;--blue-soft:#1F2D55;--on-blue:#0E1522;--ok:#5ED394;--ok-soft:#143427;--bad:#FF8F86;--bad-soft:#3B1D20;
+    --note:#3A3516;--hl:rgba(255,205,30,.3);color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1522;--grid:rgba(130,165,255,.07);--ink:#E7EDF8;--ink-2:#9DAAC4;--card:#162033;--line:#2B3A59;
+  --blue:#86A8FF;--blue-soft:#1F2D55;--on-blue:#0E1522;--ok:#5ED394;--ok-soft:#143427;--bad:#FF8F86;--bad-soft:#3B1D20;
+  --note:#3A3516;--hl:rgba(255,205,30,.3);color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+[hidden]{display:none!important}
+body{
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px;
+  color:var(--ink);font:400 16px/1.6 var(--body);
+  padding-block:24px 56px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+}
+.wrap{max-width:720px;margin:0 auto}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+
+.eyebrow{font:500 12px/1.5 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+h1{font:800 clamp(30px,8vw,46px)/1.1 var(--body);letter-spacing:-.02em;margin:.35em 0 .3em;text-wrap:balance}
+h1 .u{background:linear-gradient(transparent 60%,var(--hl) 60%);padding-inline:.1em}
+.lead{color:var(--ink-2);margin:0;max-width:60ch}
+
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;background:var(--card);border:1px solid var(--line);border-radius:14px;margin-block:22px 20px}
+.tab{border:0;background:transparent;padding:12px 8px;border-radius:10px;font-weight:600;cursor:pointer;min-height:46px}
+.tab[aria-selected="true"]{background:var(--blue);color:var(--on-blue)}
+
+h2{font:600 18px/1.35 var(--body);margin:0 0 10px}
+.group{margin-block:0 24px}
+.stack{display:grid;gap:10px}
+.choice{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border:1.5px solid var(--line);background:var(--card);border-radius:12px;cursor:pointer}
+.choice input{margin:5px 0 0;accent-color:var(--blue);width:18px;height:18px;flex:none}
+.choice:has(input:checked){border-color:var(--blue);background:var(--blue-soft)}
+.choice .t{min-width:0;display:grid;gap:2px}
+.choice b{font-weight:600}
+.choice small{color:var(--ink-2);font-size:14px;line-height:1.45}
+.choice .n{margin-left:auto;font:500 13px var(--mono);color:var(--blue);white-space:nowrap;padding-left:8px}
+
+.btn{display:inline-flex;justify-content:center;align-items:center;gap:8px;min-height:48px;padding:12px 20px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);font-weight:600;cursor:pointer}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:var(--on-blue)}
+.btn.block{width:100%}
+.btn[aria-disabled="true"]{opacity:.45;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+
+/* quiz */
+.qhead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.qhead .count{font:500 14px var(--mono)}
+.badge{font:500 12px var(--mono);letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2)}
+.bar{height:6px;border-radius:99px;background:var(--line);overflow:hidden;margin-bottom:18px}
+.bar i{display:block;height:100%;background:var(--blue);width:0;transition:width .25s}
+.qcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 16px}
+.qtext{font:600 18px/1.5 var(--body);margin:0 0 16px;white-space:pre-line;overflow-wrap:break-word}
+.opts{display:grid;gap:10px}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;padding:12px 14px;border:1.5px solid var(--line);background:var(--paper);border-radius:12px;cursor:pointer}
+.opt .L{flex:none;width:28px;height:28px;border-radius:8px;display:grid;place-items:center;font:500 13px var(--mono);background:var(--blue-soft);color:var(--blue)}
+.opt .t{flex:1;min-width:0;overflow-wrap:break-word;padding-top:2px}
+.opt .tag{flex:none;font-size:12px;font-weight:600;padding-top:4px;white-space:nowrap}
+.opt.sel{border-color:var(--blue);background:var(--blue-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.right .tag{color:var(--ok)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt.wrong .tag{color:var(--bad)}
+.note{margin-top:14px;padding:12px 14px;border-radius:12px;background:var(--note);font-size:15px}
+.note b{font-weight:600}
+.qnav{display:flex;gap:10px;margin-top:16px}
+.qnav .btn{flex:1}
+
+/* result */
+.score{text-align:center;padding:24px 16px;background:var(--card);border:1px solid var(--line);border-radius:16px;margin-bottom:18px}
+.score .big{font:500 clamp(48px,15vw,72px)/1 var(--mono);color:var(--blue)}
+.score .big small{font-size:.35em;color:var(--ink-2)}
+.score p{margin:8px 0 0;color:var(--ink-2)}
+.rev{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px}
+.rev .qt{font-weight:600;white-space:pre-line;margin:0 0 8px;overflow-wrap:break-word}
+.rev p{margin:4px 0;font-size:15px;overflow-wrap:break-word}
+.rev .x{color:var(--bad);font-weight:600}
+.rev .v{color:var(--ok);font-weight:600}
+
+/* tự luận */
+.tl{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}
+.tl .meta{display:flex;justify-content:space-between;gap:10px;margin-bottom:8px}
+.tl .q{font-weight:600;white-space:pre-line;margin:0 0 12px;overflow-wrap:break-word}
+.tl textarea{width:100%;min-height:120px;resize:vertical;padding:12px;border:1.5px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);font:inherit;line-height:1.55}
+.tl .ans{margin-top:14px;padding:14px;border-radius:12px;background:var(--note)}
+.tl .ans h3{font:600 15px var(--body);margin:0 0 6px}
+.tl .ans ul{margin:6px 0 10px;padding-left:20px}
+.tl .ans li{margin:3px 0}
+.tl .ans p{margin:6px 0}
+.pts{font:500 12px var(--mono);color:var(--blue);white-space:nowrap}
+.foot{margin-top:32px;font-size:13px;color:var(--ink-2)}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">THCS Thống Nhất · Giữa HKI 2026–2027</div>
+    <h1>Ôn tập <span class="u">Tin học 8</span></h1>
+    <p class="lead">Trắc nghiệm đảo thứ tự câu hỏi và đáp án mỗi lần làm. Tự luận hiện đề trước, em viết xong rồi mới xem đáp án gợi ý.</p>
+  </header>
+
+  <div class="tabs" role="tablist" aria-label="Chọn phần ôn tập">
+    <button class="tab" role="tab" id="tab-tn" aria-selected="true" aria-controls="p-tn">Trắc nghiệm</button>
+    <button class="tab" role="tab" id="tab-tl" aria-selected="false" aria-controls="p-tl">Tự luận</button>
+  </div>
+
+  <section id="p-tn" role="tabpanel" aria-labelledby="tab-tn">
+    <div id="home">
+      <p class="lead" style="margin-bottom:22px">Mỗi lần làm gồm 20 câu bốc ngẫu nhiên từ ngân hàng câu hỏi, đảo thứ tự câu và đáp án.</p>
+      <div class="group">
+        <h2>Chọn cách làm</h2>
+        <div class="stack" id="modes"></div>
+      </div>
+      <button class="btn primary block" id="start">Bắt đầu làm bài</button>
+    </div>
+
+    <div id="quiz" hidden>
+      <div class="qhead">
+        <button class="btn" id="exit" style="min-height:40px;padding:8px 14px">← Thoát</button>
+        <span class="badge" id="modeTag"></span>
+        <span class="count" id="count"></span>
+      </div>
+      <div class="bar" aria-hidden="true"><i id="bar"></i></div>
+      <div class="qcard">
+        <p class="qtext" id="qtext"></p>
+        <div class="opts" id="opts"></div>
+        <div class="note" id="exp" hidden></div>
+      </div>
+      <div class="qnav">
+        <button class="btn" id="prev">← Câu trước</button>
+        <button class="btn primary" id="next">Câu tiếp →</button>
+      </div>
+    </div>
+
+    <div id="result" hidden></div>
+  </section>
+
+  <section id="p-tl" role="tabpanel" aria-labelledby="tab-tl" hidden>
+    <div id="tllist"></div>
+  </section>
+
+  <p class="foot">Nội dung theo hướng dẫn ôn tập giữa học kì I, môn Tin học 8.</p>
+</div>
+
+<script>
+/* ===== Ngân hàng câu hỏi ===== */
+var QS = {
+  de: [
+    {q:"Nhận định nào sau đây về việc sử dụng nhạc trong video đăng lên mạng là đúng?",
+     o:["Nhạc thuộc phạm vi công cộng hoặc có giấy phép phù hợp với cách sử dụng thì có thể được dùng.",
+        "Nhạc được ghi tên tác giả và nguồn trong phần mô tả thì đáp ứng yêu cầu về bản quyền.",
+        "Nhạc chỉ dùng cho học tập hoặc giải trí cá nhân thì được miễn các quy định về bản quyền.",
+        "Nhạc được AI thay đổi lời, giai điệu thì có thể sử dụng mà không cần xem xét quyền đối với bản gốc."],
+     a:0, e:"Nhạc thuộc phạm vi công cộng hoặc có giấy phép phù hợp thì được dùng. Chỉ ghi nguồn, dùng để học hay nhờ AI đổi lời đều chưa đủ để bỏ qua quyền tác giả."},
+    {q:"Đâu không phải là ưu điểm của thông tin trong môi trường số?",
+     o:["Có thể truy cập mọi lúc, mọi nơi khi có điều kiện phù hợp.","Dễ dàng sao chép và chia sẻ.","Giúp rút ngắn thời gian trao đổi thông tin.","Bị hạn chế về khả năng lưu trữ thông tin."],
+     a:3, e:"Thông tin số được lưu trữ với dung lượng rất lớn, nên \"bị hạn chế về khả năng lưu trữ\" không phải ưu điểm."},
+    {q:"Cha đẻ của máy tính là ai?",
+     o:["Alan Turing","Blaise Pascal","Charles Babbage","Sir John Napier"],
+     a:2, e:"Charles Babbage được gọi là cha đẻ của máy tính."},
+    {q:"Hành động nào sau đây không vi phạm đạo đức và pháp luật?",
+     o:["Đăng tải thông tin sai sự thật lên mạng.","Cố ý nghe, ghi âm trái phép các cuộc nói chuyện của người khác.","Chia sẻ file một bài hát có bản quyền mà em đã mua hợp pháp cho các bạn cùng nghe.","Tặng lại đĩa nhạc có bản quyền mà em đã mua hợp pháp cho bạn."],
+     a:3, e:"Mua hợp pháp chỉ cho quyền dùng cá nhân. Tặng lại chính chiếc đĩa là chuyển giao bản gốc, còn chia sẻ file là sao chép và phân phối trái phép."},
+    {q:"Sắp xếp các bước sau theo trình tự hợp lí để thực hiện thao tác tìm kiếm thông tin trên máy tìm kiếm.\n1. Gõ từ khóa vào ô nhập từ khóa.\n2. Truy cập vào máy tìm kiếm.\n3. Nhấn phím Enter hoặc nháy nút tìm kiếm.",
+     o:["2 - 1 - 3","1 - 3 - 2","1 - 2 - 3","2 - 3 - 1"],
+     a:0, e:"Vào máy tìm kiếm trước, gõ từ khóa, rồi nhấn Enter hoặc nút tìm kiếm."},
+    {q:"Điều nào sau đây em không được phép làm khi tạo ra sản phẩm số?",
+     o:["Sử dụng thông tin do mình tự tạo ra.","Tạo nội dung chống phá, xuyên tạc đạo đức, văn hóa và pháp luật.","Luôn trung thực trong quá trình tạo ra sản phẩm số.","Tạo sản phẩm có nội dung và hình thức phù hợp với chuẩn mực đạo đức, văn hóa."],
+     a:1, e:"Nội dung chống phá, xuyên tạc đạo đức, văn hóa, pháp luật là điều bị cấm."},
+    {q:"Người đàn ông này đã tạo ra hệ điều hành cho IBM và bắt đầu một công ty có tên Microsoft.",
+     o:["Steve Jobs","Bill Gates","Alan Turing","Howard Aiken"],
+     a:1, e:"Bill Gates là người sáng lập Microsoft."},
+    {q:"Sản phẩm số do em tạo ra phải đảm bảo yêu cầu nào sau đây?",
+     o:["Càng gây chú ý càng tốt, kể cả nội dung sai sự thật.","Chỉ cần đẹp, không cần quan tâm nội dung.","Thể hiện tính văn hóa, đạo đức và không vi phạm pháp luật.","Có thể xuyên tạc để nhiều người xem."],
+     a:2, e:"Sản phẩm số phải thể hiện tính văn hóa, đạo đức và không vi phạm pháp luật."},
+    {q:"Em thấy bạn quay video các bạn trong lớp đánh nhau rồi định đăng lên mạng xã hội. Em sẽ làm gì?",
+     o:["Đồng tình với bạn.","Khuyên bạn không nên đăng vì vi phạm quyền riêng tư và tiêu chuẩn cộng đồng.","Khuyên bạn cứ quay nhưng đừng đăng.","Khuyên bạn gửi video cho mọi người xem."],
+     a:1, e:"Quay và đăng video bạo lực xâm phạm quyền riêng tư và vi phạm tiêu chuẩn cộng đồng."},
+    {q:"Những ảnh hưởng tiêu cực của máy tính đến đời sống con người là:",
+     o:["Lệ thuộc vào máy tính","Kết nối bạn bè","Mua bán qua mạng","Hội họp trực tuyến"],
+     a:0, e:"Ba phương án còn lại là tiện ích. Lệ thuộc vào máy tính mới là ảnh hưởng tiêu cực."},
+    {q:"Nhận định nào sau đây về thông tin số là đúng?",
+     o:["Thông tin số nào cũng hoàn toàn đáng tin cậy.","Thông tin số không thuộc quyền tác giả của ai.","Thông tin số được bảo hộ quyền tác giả.","Thông tin số chỉ do một tổ chức duy nhất lưu trữ."],
+     a:2, e:"Thông tin số do nhiều tổ chức, cá nhân lưu trữ, có độ tin cậy khác nhau và được bảo hộ quyền tác giả."},
+    {q:"Ý tưởng nào đóng vai trò quan trọng trong lịch sử phát triển của máy tính?",
+     o:["Trí óc hóa việc lao động.","Cơ giới hóa việc lao động.","Trí óc hóa việc tính toán.","Cơ giới hóa việc tính toán."],
+     a:3, e:"Ý tưởng cơ giới hóa việc tính toán dẫn tới sự ra đời của máy tính."},
+    {q:"Lợi ích nào sau đây mà tin học và máy tính mang lại cho xã hội?",
+     o:["Làm thay đổi nhận thức và cách tổ chức, vận hành các hoạt động xã hội.","Gia tăng tội phạm mạng.","Con người phụ thuộc quá mức vào công nghệ.","Dễ tiếp xúc với tài liệu không phù hợp trên Internet."],
+     a:0, e:"Ba phương án còn lại là tác hại. Lợi ích là thay đổi nhận thức, cách tổ chức và vận hành các hoạt động xã hội."},
+    {q:"Thông tin nào sau đây là không đáng tin cậy?",
+     o:["Bài viết của nhà báo có uy tín, có trích dẫn nguồn từ trang web của Chính phủ.","Bài viết hướng dẫn phòng tránh dịch bệnh trên trang web của cơ quan y tế.","Thông tin trên website của cơ quan nhà nước có tên miền .gov.vn.","Bài viết của một cá nhân đăng trên mạng xã hội nhằm bôi nhọ người khác."],
+     a:3, e:"Bài đăng nhằm bôi nhọ người khác không có nguồn đáng tin và mục đích không đúng đắn."}
+  ],
+  mo: [
+    {q:"Điền vào chỗ trống: Thông tin số được nhiều tổ chức và cá nhân lưu trữ với dung lượng rất lớn, ........",
+     o:["không được bảo hộ quyền tác giả và có độ tin cậy khác nhau.","được bảo hộ quyền tác giả và không đáng tin cậy.","được bảo hộ quyền tác giả và có độ tin cậy khác nhau.","được bảo hộ quyền tác giả và rất đáng tin cậy."],
+     a:2, e:"Thông tin số được bảo hộ quyền tác giả và có độ tin cậy khác nhau, không phải cái nào cũng đáng tin hay cũng sai."},
+    {q:"Hành động nào sau đây không vi phạm đạo đức và pháp luật?",
+     o:["Tặng đĩa nhạc có bản quyền em đã mua cho người khác.","Đăng tải thông tin sai sự thật lên mạng.","Cố ý nghe, ghi âm trái phép các cuộc nói chuyện.","Tải một bài trình chiếu của người khác từ Internet và sử dụng như là của mình tạo ra."],
+     a:0, e:"Chỉ việc tặng lại đĩa đã mua hợp pháp là đúng. Nhận sản phẩm của người khác là của mình là vi phạm đạo đức."},
+    {q:"Em không được phép tạo ra sản phẩm số nào dưới đây?",
+     o:["Tệp ghi âm giọng hát của em","Vlog","Trò chơi điện tử em tự thiết kế","Video có ghép nhạc đã có bản quyền"],
+     a:3, e:"Ghép nhạc có bản quyền khi chưa được phép là vi phạm quyền tác giả."},
+    {q:"Thời kì đầu các máy tính được thiết kế dựa trên các rơ le được gọi là gì?",
+     o:["Máy tính thông minh","Máy tính điện cơ","Máy tính khoa học","Máy tính hiện đại"],
+     a:1, e:"Máy tính thời kì đầu dùng rơ le nên gọi là máy tính điện cơ."},
+    {q:"Hành vi nào sau đây không vi phạm đạo đức, pháp luật khi sử dụng công nghệ kĩ thuật số?",
+     o:["Sao chép thông tin từ một trang web và coi đó là của mình.","Sử dụng phần mềm bẻ khóa.","Phát trực tiếp hoặc chia sẻ các vụ bạo lực học đường, đưa lên mạng thông tin cá nhân của người khác khi không được cho phép.","Xem phim trên các trang mạng có bản quyền hợp pháp."],
+     a:3, e:"Xem phim trên trang có bản quyền hợp pháp là việc làm đúng. Ba hành vi còn lại đều vi phạm."},
+    {q:"Muốn tìm hiểu thông tin về một phương pháp học tập hiệu quả thì em có thể tìm hiểu thông tin của ai?",
+     o:["Một người lạ bất kỳ.","Một người học giỏi nổi tiếng.","Một người ẩn danh em mới quen trên mạng xã hội.","Một người tuyên truyền xuyên tạc văn hóa lệch lạc trên mạng xã hội."],
+     a:1, e:"Nên chọn nguồn rõ ràng, có thành tích đáng tin. Tránh người lạ, người ẩn danh hay người tuyên truyền sai lệch."},
+    {q:"Hành động nào là vi phạm đạo đức, pháp luật và văn hóa khi sử dụng công nghệ kĩ thuật số?",
+     o:["Chia sẻ thông tin mua bán động vật hoang dã quý hiếm.","Quay và lan truyền video bạo lực học đường.","Tham gia cá cược bóng đá qua Internet.","Cả A, B và C."],
+     a:3, e:"Cả ba hành vi A, B, C đều vi phạm.", fixed:true},
+    {q:"Tình huống nào dưới đây là vi phạm quy định pháp luật?",
+     o:["Phong chụp ảnh Lan đang đùa nghịch với tư thế không đẹp mắt, rồi chia sẻ lên mạng xã hội làm Lan xấu hổ và không dám đến trường.","Học sinh thu âm lời giảng của thầy cô trên lớp để nghe lại những phần chưa hiểu rõ.","Sáng tác một bài thơ về lớp và gửi các bạn cùng đọc.","Tạo một trang cá nhân để chia sẻ những kinh nghiệm học tập của mình."],
+     a:0, e:"Đăng ảnh của bạn khi chưa được đồng ý, nhằm làm bạn xấu hổ, là xâm phạm quyền riêng tư."},
+    {q:"Thông tin số là gì?",
+     o:["Thông tin được mã hóa thành các dãy bit và lưu truyền trong các thiết bị kĩ thuật số.","Thông tin chỉ được viết tay trên giấy và lưu trong tủ hồ sơ.","Thông tin chỉ gồm văn bản, không gồm hình ảnh hay âm thanh.","Thông tin chỉ tồn tại khi máy tính kết nối với Internet."],
+     a:0, e:"Văn bản, hình ảnh, âm thanh... được mã hóa thành dãy bit trong thiết bị kĩ thuật số gọi là thông tin số."},
+    {q:"Đặc điểm nào sau đây là của thông tin số?",
+     o:["Dễ dàng được nhân bản và lan truyền nhưng khó bị xóa bỏ hoàn toàn.","Chỉ nhân bản được đúng một lần.","Đã đăng lên mạng thì xóa một lần là mất hẳn.","Không thể lan truyền sang thiết bị khác."],
+     a:0, e:"Thông tin số dễ nhân bản, dễ lan truyền và khó xóa bỏ hoàn toàn."},
+    {q:"Thông tin số có thể được truy cập từ xa trong trường hợp nào?",
+     o:["Khi người quản lý thông tin đó cho phép.","Chỉ khi đứng cạnh thiết bị lưu trữ thông tin.","Chỉ khi thiết bị không kết nối mạng.","Không bao giờ truy cập từ xa được."],
+     a:0, e:"Thông tin số có thể được truy cập từ xa nếu người quản lý thông tin cho phép."},
+    {q:"Trong lĩnh vực giao thông, ứng dụng bản đồ và định vị toàn cầu GPS giúp con người làm gì?",
+     o:["Tìm đường đi và xác định vị trí.","Chẩn đoán bệnh cho người lái xe.","Soạn thảo văn bản trên xe.","Ghi âm giọng hát khi đi đường."],
+     a:0, e:"GPS giúp tìm đường đi và đã trở thành trang bị tiêu chuẩn của ô tô đời mới."},
+    {q:"Máy tính hỗ trợ kiểm soát các lỗi vi phạm giao thông bằng cách nào?",
+     o:["Hệ thống camera giám sát giao thông.","Đo nhiệt độ của người đi đường.","Phát quảng cáo trên đường phố.","Đếm số xe bán ra trong tháng."],
+     a:0, e:"Máy tính kiểm soát lỗi vi phạm giao thông thông qua hệ thống camera."},
+    {q:"Trong y tế, thiết bị nào giúp theo dõi sức khỏe mọi lúc, mọi nơi?",
+     o:["Đồng hồ thông minh","Đồng hồ cát","Đồng hồ quả lắc","Đồng hồ mặt trời"],
+     a:0, e:"Đồng hồ thông minh giúp theo dõi sức khỏe mọi lúc, mọi nơi."},
+    {q:"Tác hại của thông tin giả, sai sự thật trên Internet là gì?",
+     o:["Gây hoang mang, ảnh hưởng xấu đến cộng đồng.","Giúp mọi người hiểu đúng hơn về sự việc.","Làm tăng độ tin cậy của thông tin.","Không gây ảnh hưởng gì đến ai."],
+     a:0, e:"Tin giả gây hoang mang và ảnh hưởng xấu đến cộng đồng."},
+    {q:"Cách nào sau đây giúp xác định thông tin đáng tin cậy?",
+     o:["Kiểm tra nguồn thông tin.","Tin ngay khi có nhiều người chia sẻ.","Tin những bài có tiêu đề giật gân.","Tin vì bài được đăng trên mạng xã hội."],
+     a:0, e:"Cần kiểm tra nguồn thông tin. Số lượt chia sẻ, tiêu đề giật gân hay việc đăng trên mạng xã hội không chứng minh thông tin đúng."},
+    {q:"Cách nào sau đây không giúp xác định thông tin đáng tin cậy?",
+     o:["Kiểm tra chứng cứ của kết luận.","Phân biệt ý kiến và sự kiện.","Đánh giá tính thời sự của thông tin.","Chỉ dựa vào số lượt thích, lượt chia sẻ của bài đăng."],
+     a:3, e:"Số lượt thích, chia sẻ không cho biết thông tin đúng hay sai."},
+    {q:"Đánh giá tính thời sự của thông tin nghĩa là gì?",
+     o:["Xem thông tin còn mới, được cập nhật hay đã lỗi thời.","Xem bài viết có bao nhiêu ảnh minh họa.","Xem tác giả bao nhiêu tuổi.","Xem bài viết dài hay ngắn."],
+     a:0, e:"Tính thời sự cho biết thông tin còn phù hợp với thời điểm hiện tại hay không."},
+    {q:"Câu nào sau đây là một sự kiện, không phải ý kiến cá nhân?",
+     o:["Môn Tin học là môn thú vị nhất.","Hà Nội là thủ đô của Việt Nam.","Điện thoại màu xanh đẹp hơn màu đỏ.","Bộ phim này hay nhất năm nay."],
+     a:1, e:"Sự kiện kiểm chứng được là đúng hay sai. Các câu còn lại là cảm nhận riêng của mỗi người."},
+    {q:"Vân chụp một bài văn trong cuốn sách đã mua và gửi cho Long. Long gõ lại, chỉnh sửa, cắt xén rồi nộp cho cô giáo chấm điểm. Hành vi vi phạm đạo đức của Long là gì?",
+     o:["Nộp bài văn của người khác cho cô giáo như bài của mình để lấy điểm.","Dùng phần mềm Word để gõ văn bản.","Nhận ảnh chụp bài văn từ bạn.","Đi mua sách ở hiệu sách."],
+     a:0, e:"Nhận sản phẩm của người khác làm của mình để lấy điểm là thiếu trung thực, vi phạm đạo đức."}
+  ]
+};
+var MODES = [
+  {k:"practice", t:"Luyện tập", d:"Chọn xong biết ngay đúng hay sai, kèm giải thích."},
+  {k:"test", t:"Kiểm tra", d:"Làm hết rồi nộp bài mới xem điểm và đáp án."}
+];
+
+var TL = [
+  {id:"tl1", tag:"Câu 1", pts:"",
+   q:"Thông tin số là gì? Hãy nêu các đặc điểm chính của thông tin số.",
+   a:'<p><b>Khái niệm</b></p><ul><li>Thông tin (văn bản, hình ảnh, âm thanh...) được mã hóa thành các dãy bit lưu truyền trong các thiết bị kĩ thuật số gọi là thông tin số.</li></ul><p><b>Đặc điểm</b></p><ul><li>Dễ dàng được nhân bản và lan truyền nhưng khó bị xóa bỏ hoàn toàn.</li><li>Có thể được truy cập từ xa nếu người quản lý thông tin đó cho phép.</li></ul>'},
+  {id:"tl2", tag:"Câu 2", pts:"",
+   q:"Em hãy kể một vài dịch vụ và tiện ích mà máy tính mang lại cho con người trong lĩnh vực y tế, giao thông.",
+   a:'<p><b>Giao thông</b></p><ul><li>Ứng dụng bản đồ và định vị toàn cầu GPS giúp tìm đường đi, đã trở thành tiêu chuẩn trang bị cho ô tô đời mới.</li><li>Máy tính kiểm soát các lỗi vi phạm giao thông bằng hệ thống camera.</li><li>Ngoài ra: máy tính giúp con người điều khiển máy bay, tàu thuyền, ô tô.</li></ul><p><b>Y tế</b></p><ul><li>Nhiều thiết bị y tế được điều khiển bằng máy tính.</li><li>Đồng hồ thông minh giúp theo dõi sức khỏe mọi lúc, mọi nơi.</li></ul>'},
+  {id:"tl3", tag:"Câu 3", pts:"",
+   q:"Lan làm bài thuyết trình môn Tin học. Lan lên Google, tải về nhiều hình ảnh của các họa sĩ rồi chèn vào bài làm của mình để minh họa. Lan cho rằng: \"Ảnh đã đăng công khai trên mạng thì ai cũng dùng được\".\na) Em có đồng ý với ý kiến của Lan không? Vì sao?\nb) Em hãy đưa ra ít nhất 2 lời khuyên để Lan không vi phạm quyền tác giả.",
+   a:'<p><b>a) Không đồng ý.</b> Vì:</p><ul><li>Ảnh đăng công khai vẫn là tác phẩm có tác giả và được bảo hộ quyền tác giả. "Công khai" chỉ nghĩa là ai cũng xem được, không có nghĩa là ai cũng được sao chép, sử dụng.</li><li>Muốn dùng phải được tác giả hoặc chủ sở hữu cho phép, hoặc ảnh có giấy phép cho dùng. Dù dùng để học tập vẫn cần ghi tên tác giả và nguồn.</li></ul><p><b>b) Lời khuyên</b> (nêu ít nhất 2 ý)</p><ul><li>Dùng ảnh miễn phí bản quyền hoặc có giấy phép cho dùng.</li><li>Xin phép tác giả trước khi dùng.</li><li>Ghi rõ tên tác giả và nguồn ảnh.</li><li>Tự chụp hoặc tự vẽ hình minh họa.</li></ul>'},
+  {id:"tl4", tag:"Câu 4", pts:"",
+   q:"Em hãy chỉ ra hành vi vi phạm bản quyền, vi phạm đạo đức trong tình huống dưới đây:\nVân mua cuốn sách các bài văn hay trong hiệu sách. Vân dùng điện thoại di động chụp một bài văn trong cuốn sách và gửi cho Long. Long sử dụng phần mềm Word để gõ lại, chỉnh sửa, cắt xén bài văn này và nộp cho cô giáo để chấm điểm.",
+   a:'<ul><li><b>Hành vi vi phạm bản quyền:</b> Long sử dụng phần mềm Word để gõ lại, chỉnh sửa, cắt xén bài văn và nộp cho cô giáo.</li><li><b>Hành vi vi phạm đạo đức:</b> Long nộp bài văn của người khác cho cô giáo để chấm điểm, như thể đó là bài của mình.</li></ul><p>Lưu ý thêm: việc Vân chụp bài văn rồi gửi cho bạn cũng là sao chép và phân phối nội dung khi chưa được phép.</p>'},
+  {id:"tl5", tag:"Câu 5", pts:"",
+   q:"Thông tin giả, sai sự thật trên Internet gây ra những tác hại, ảnh hưởng xấu đến cộng đồng.\na) Hãy cho ví dụ và tác hại của tin giả đó.\nb) Nêu một số cách xác định thông tin đáng tin cậy.",
+   a:'<p><b>a)</b> Em tự cho ví dụ. Ví dụ gợi ý: tin đồn về một "loại thuốc chữa khỏi mọi bệnh" lan nhanh trên mạng xã hội. Có người tin, bỏ điều trị đúng cách nên bệnh nặng hơn, đồng thời gây hoang mang cho nhiều người.</p><p><b>b)</b> Một số cách xác định thông tin đáng tin cậy:</p><ul><li>Kiểm tra nguồn thông tin.</li><li>Phân biệt ý kiến và sự kiện.</li><li>Kiểm tra chứng cứ của kết luận.</li><li>Đánh giá tính thời sự của thông tin.</li></ul>'}
+];
+
+/* ===== Tiện ích ===== */
+function $(s, r){ return (r||document).querySelector(s); }
+function h(tag, props){
+  var e = document.createElement(tag), i, k;
+  props = props || {};
+  for (k in props){
+    var v = props[k];
+    if (k === "class") e.className = v;
+    else if (k.slice(0,2) === "on") e.addEventListener(k.slice(2), v);
+    else if (v === true) e.setAttribute(k, "");
+    else if (v !== false && v != null) e.setAttribute(k, v);
+  }
+  for (i = 2; i < arguments.length; i++){
+    var c = arguments[i];
+    if (c == null || c === false) continue;
+    e.append(c.nodeType ? c : document.createTextNode(c));
+  }
+  return e;
+}
+function shuffle(a){
+  for (var i = a.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+function store(k, v){
+  try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) {}
+  return null;
+}
+function fmt(n){ return (Math.round(n * 10) / 10).toString().replace(".", ","); }
+var LET = "ABCD";
+
+/* ===== Trạng thái ===== */
+var S = { mode: store("t8-mode") || "practice", items: [], idx: 0, runMode: "practice" };
+var QUIZ_SIZE = 20;
+/* Luôn có đủ các câu cốt lõi (QS.de), phần còn lại bốc ngẫu nhiên từ QS.mo cho đủ QUIZ_SIZE câu */
+function pickQuiz(){
+  var extra = shuffle(QS.mo.slice()).slice(0, Math.max(0, QUIZ_SIZE - QS.de.length));
+  return QS.de.concat(extra);
+}
+if (S.mode !== "practice" && S.mode !== "test") S.mode = "practice";
+
+function buildItems(list){
+  var items = list.map(function(q){
+    var order = q.o.map(function(_, i){ return i; });
+    if (!q.fixed) shuffle(order);
+    return { q: q, order: order, chosen: null };
+  });
+  return shuffle(items);
+}
+
+/* ===== Màn hình chọn ===== */
+function renderHome(){
+  var modes = $("#modes");
+  modes.textContent = "";
+  MODES.forEach(function(m){
+    var inp = h("input", {type:"radio", name:"mode", value:m.k, checked: S.mode === m.k, onchange:function(){ S.mode = m.k; store("t8-mode", m.k); }});
+    modes.append(h("label", {class:"choice"}, inp,
+      h("span", {class:"t"}, h("b", {}, m.t), h("small", {}, m.d))));
+  });
+}
+
+function show(which){
+  $("#home").hidden = which !== "home";
+  $("#quiz").hidden = which !== "quiz";
+  $("#result").hidden = which !== "result";
+  window.scrollTo(0, 0);
+}
+
+function startQuiz(list, mode){
+  S.items = buildItems(list);
+  S.idx = 0;
+  S.runMode = mode;
+  $("#modeTag").textContent = mode === "practice" ? "Luyện tập" : "Kiểm tra";
+  show("quiz");
+  renderQuiz();
+}
+
+/* ===== Làm bài ===== */
+function renderQuiz(){
+  var it = S.items[S.idx], q = it.q, n = S.items.length;
+  var practice = S.runMode === "practice";
+  var answered = it.chosen !== null;
+  var locked = practice && answered;
+
+  $("#count").textContent = "Câu " + (S.idx + 1) + "/" + n;
+  $("#bar").style.width = ((S.idx + 1) / n * 100) + "%";
+  $("#qtext").textContent = q.q;
+
+  var box = $("#opts");
+  box.textContent = "";
+  it.order.forEach(function(orig, pos){
+    var cls = "opt", tag = "";
+    if (practice && answered){
+      if (orig === q.a){ cls += " right"; tag = (it.chosen === orig) ? "✓ Đúng" : "✓ Đáp án đúng"; }
+      else if (orig === it.chosen){ cls += " wrong"; tag = "✗ Em chọn sai"; }
+    } else if (!practice && it.chosen === orig){ cls += " sel"; }
+    var b = h("button", {class:cls, type:"button", "aria-pressed": it.chosen === orig ? "true" : "false",
+      "aria-disabled": locked ? "true" : "false",
+      onclick:function(){
+        if (locked) return;
+        it.chosen = orig;
+        renderQuiz();
+      }},
+      h("span", {class:"L"}, LET[pos]),
+      h("span", {class:"t"}, q.o[orig]),
+      tag ? h("span", {class:"tag"}, tag) : null);
+    if (locked) b.style.cursor = "default";
+    box.append(b);
+  });
+
+  var exp = $("#exp");
+  if (practice && answered){
+    exp.hidden = false;
+    exp.textContent = "";
+    exp.append(h("b", {}, it.chosen === q.a ? "Chính xác. " : "Chưa đúng. "), q.e);
+  } else {
+    exp.hidden = true;
+  }
+
+  var last = S.idx === n - 1;
+  var prev = $("#prev"), next = $("#next");
+  prev.setAttribute("aria-disabled", S.idx === 0 ? "true" : "false");
+  next.textContent = last ? (practice ? "Xem kết quả" : "Nộp bài") : "Câu tiếp →";
+  if (!practice){
+    var done = S.items.filter(function(x){ return x.chosen !== null; }).length;
+    $("#modeTag").textContent = "Kiểm tra · đã làm " + done + "/" + n;
+  }
+}
+
+function goPrev(){ if (S.idx > 0){ S.idx--; renderQuiz(); window.scrollTo(0, 0); } }
+function goNext(){
+  if (S.idx < S.items.length - 1){ S.idx++; renderQuiz(); window.scrollTo(0, 0); }
+  else finish();
+}
+
+/* ===== Kết quả ===== */
+function finish(){
+  var n = S.items.length;
+  var wrong = S.items.filter(function(x){ return x.chosen !== x.q.a; });
+  var right = n - wrong.length;
+  var score = right / n * 10;
+  var msg = score >= 9 ? "Rất tốt, em nắm bài chắc rồi."
+          : score >= 7 ? "Khá tốt. Xem lại các câu sai bên dưới."
+          : score >= 5 ? "Đạt. Em nên ôn lại các câu sai rồi làm lại."
+          : "Em cần ôn thêm. Đọc kĩ các câu sai rồi làm lại nhé.";
+
+  var res = $("#result");
+  res.textContent = "";
+  res.append(
+    h("div", {class:"score"},
+      h("div", {class:"big"}, fmt(score), h("small", {}, " /10")),
+      h("p", {}, right + "/" + n + " câu đúng"),
+      h("p", {}, msg))
+  );
+
+  var actions = h("div", {class:"row", style:"margin-bottom:22px"});
+  if (wrong.length){
+    actions.append(h("button", {class:"btn primary", type:"button", onclick:function(){
+      startQuiz(wrong.map(function(x){ return x.q; }), S.runMode);
+    }}, "Làm lại " + wrong.length + " câu sai"));
+  }
+  actions.append(h("button", {class:"btn", type:"button", onclick:function(){
+    startQuiz(pickQuiz(), S.runMode);
+  }}, "Làm bộ câu mới"));
+  actions.append(h("button", {class:"btn", type:"button", onclick:function(){ goHome(); }}, "Về trang chủ"));
+  res.append(actions);
+
+  if (wrong.length){
+    res.append(h("h2", {}, "Các câu cần xem lại (" + wrong.length + ")"));
+    wrong.forEach(function(x){
+      var mine = x.chosen === null ? h("p", {class:"x"}, "Em chưa trả lời câu này.")
+        : h("p", {}, h("span", {class:"x"}, "Em chọn: "), x.q.o[x.chosen]);
+      res.append(h("div", {class:"rev"},
+        h("p", {class:"qt"}, x.q.q),
+        mine,
+        h("p", {}, h("span", {class:"v"}, "Đáp án đúng: "), x.q.o[x.q.a]),
+        h("p", {}, x.q.e)));
+    });
+  } else {
+    res.append(h("p", {class:"lead"}, "Em trả lời đúng tất cả các câu."));
+  }
+  show("result");
+}
+
+function goHome(){
+  renderHome();
+  show("home");
+}
+
+/* ===== Tự luận ===== */
+function renderTL(){
+  var list = $("#tllist");
+  list.textContent = "";
+  TL.forEach(function(t){
+    var ta = h("textarea", {id: t.id + "-ta", placeholder:"Viết câu trả lời của em ở đây...", "aria-label":"Câu trả lời của em"});
+    var saved = store("t8-" + t.id);
+    if (saved) ta.value = saved;
+    ta.addEventListener("input", function(){ store("t8-" + t.id, ta.value); });
+    var ans = h("div", {class:"ans", hidden:true});
+    ans.innerHTML = "<h3>Đáp án gợi ý</h3>" + t.a;
+    var btn = h("button", {class:"btn", type:"button", "aria-expanded":"false", style:"margin-top:12px", onclick:function(){
+      var open = ans.hidden;
+      ans.hidden = !open;
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+      btn.textContent = open ? "Ẩn đáp án" : "Xem đáp án gợi ý";
+    }}, "Xem đáp án gợi ý");
+    list.append(h("article", {class:"tl"},
+      h("div", {class:"meta"}, h("span", {class:"badge"}, t.tag), t.pts ? h("span", {class:"pts"}, t.pts) : null),
+      h("p", {class:"q"}, t.q),
+      ta, btn, ans));
+  });
+}
+
+/* ===== Chuyển tab ===== */
+function setTab(which){
+  var tn = which === "tn";
+  $("#tab-tn").setAttribute("aria-selected", tn ? "true" : "false");
+  $("#tab-tl").setAttribute("aria-selected", tn ? "false" : "true");
+  $("#p-tn").hidden = !tn;
+  $("#p-tl").hidden = tn;
+}
+
+/* ===== Khởi động ===== */
+$("#tab-tn").addEventListener("click", function(){ setTab("tn"); });
+$("#tab-tl").addEventListener("click", function(){ setTab("tl"); });
+$("#start").addEventListener("click", function(){ startQuiz(pickQuiz(), S.mode); });
+$("#exit").addEventListener("click", goHome);
+$("#prev").addEventListener("click", function(){ if ($("#prev").getAttribute("aria-disabled") !== "true") goPrev(); });
+$("#next").addEventListener("click", goNext);
+renderHome();
+renderTL();
+</script>
+
+</body>
+</html>
